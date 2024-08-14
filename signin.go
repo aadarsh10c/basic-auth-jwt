@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -39,6 +40,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Printf("Creds : %v",creds)
+
 	expectedPassword, ok := users[creds.Username]
 
 	if !ok || expectedPassword != creds.Password {
@@ -57,9 +60,10 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Declare the token with algorithm used for signing . and the claims
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
+		fmt.Printf("Error %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
